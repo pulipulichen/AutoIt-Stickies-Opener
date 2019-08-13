@@ -22,17 +22,23 @@ EndFunc
 
 Func openWithStickies($file, $sti)
    Local $stiFilename = $file & '.sti'
-   $stiFilename = StringReplace($stiFilename, ":", "-")
+   ;$stiFilename = StringReplace($stiFilename, ":", "-")
 
    Local $hWriteFileOpen = FileOpen($stiFilename, $FO_OVERWRITE + $FO_UTF16_LE)
 
    If $hWriteFileOpen = -1 Then
-		MsgBox($MB_SYSTEMMODAL, "", "An error occurred whilst writing the temporary file.")
+		MsgBox($MB_SYSTEMMODAL, $stiFilename, "An error occurred whilst writing the temporary file." & @CRLF & $stiFilename)
 		Return False
 	 EndIf
 
    FileWrite($hWriteFileOpen, $sti)
    FileClose($hWriteFileOpen)
+
+   ; ------------------------------
+   If ProcessExists("stickies.exe") = False Then ; Check if the Notepad process is running.
+	  Run('"' & @ScriptDir & '\Stickies\stickies.exe"')
+	  Sleep(500)
+   EndIf
 
    ; ------------------------------
    Local $cmd = '"' & @ScriptDir & '\Stickies\stickies.exe" "' & $stiFilename & '"'
@@ -134,6 +140,8 @@ If $CmdLine[0] = 0 Then
 
 	  $sData = StringReplace($sData, @CRLF, @CR)
 	  $sData = StringTrim($sData)
+	  Local $titleAbsctract = $sData
+
 	  Local $sHex =  StringToBinary($sData, 1)
 	  Local $sEscaped = StringRegExpReplace(StringMid($sHex, 3), '([[:xdigit:]]{2})', 'x$1')
 	  $sData = StringReplace($sEscaped, 'x', "\'")
@@ -143,9 +151,17 @@ If $CmdLine[0] = 0 Then
 
 	  ;MsgBox($MB_SYSTEMMODAL, "Pc Long format", _DateTimeFormat(_NowCalc(), 1))
 	  Local $title = "Clip " & _DateTimeFormat(_NowCalc(), 5)
+
+
+	  $titleAbsctract = StringReplace($titleAbsctract, @CR, ' ')
+	  If StringLen($titleAbsctract) > 15 Then
+		$titleAbsctract = StringMid($titleAbsctract, 1, 15) & '...'
+	  EndIf
+	  Local $stickyTitle = '[' & _DateTimeFormat(_NowCalc(), 5) & '] ' & $titleAbsctract
+
 	  ;MsgBox($MB_SYSTEMMODAL, "format 5", $title)
 	  $title = StringReplace($title, "'", "")
-	  Local $sti = 'col: 255,255,180' & @CRLF & 'title: ' & $title  & @CRLF & @CRLF
+	  Local $sti = 'col: 255,255,180' & @CRLF & 'title: ' & $stickyTitle  & @CRLF & @CRLF
 	  ;$sti = $sti & $sData
 
 	  $sti = $sti & "{\rtf1\ansi\ansicpg950\deff0\deflang1033\deflangfe1028{\fonttbl{\f0\fswiss\fprq2\fcharset136 System;}}"
@@ -153,6 +169,7 @@ If $CmdLine[0] = 0 Then
 	  $sti = $sti & $sData
 	  $sti = $sti & @CRLF & "}"
 
+	  $title = StringReplace($title, ":", "-")
 	  openWithStickies($title, $sti)
    EndIf
 EndIf
