@@ -1,5 +1,6 @@
 /nbproject/
 /Stickies/skins/
-/My New File.txt
-/My New File.txt.sti
 /test/
+/*.sti
+/*.txt
+/*.rtf

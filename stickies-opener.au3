@@ -48,7 +48,7 @@ Func openWithStickies($file, $sti)
 
    ; ------------------------------
    Sleep(1000)
-   FileDelete($stiFilename)
+   ;FileDelete($stiFilename)
 EndFunc
 
 Func StringTrim($str)
@@ -126,6 +126,7 @@ Next
 
 If $CmdLine[0] = 0 Then
    Local $sData = ClipGet()
+   ConsoleWrite($sData)
    ;$sData = '附件四作業要點'
    ;MsgBox($MB_SYSTEMMODAL, "sData", $sData & '')
    If $sData <> 1 And $sData <> 2 And $sData <> 3 And $sData <> 4 Then
@@ -139,25 +140,32 @@ If $CmdLine[0] = 0 Then
 	  ;$sData = StringToASCIIArray($sData, 0, StringLen($sData), 2)
 
 	  $sData = StringReplace($sData, @CRLF, @CR)
-	  $sData = StringTrim($sData)
+	  ;$sData = StringTrim($sData)
+	  $sData = 'aaa' & $sData & 'aaa'
 	  Local $titleAbsctract = $sData
 
 	  Local $sHex =  StringToBinary($sData, 1)
 	  Local $sEscaped = StringRegExpReplace(StringMid($sHex, 3), '([[:xdigit:]]{2})', 'x$1')
 	  $sData = StringReplace($sEscaped, 'x', "\'")
+	  $sData = StringLower($sData)
 	  ;$sData = Hex($sData, 2)
 	  ;MsgBox($MB_SYSTEMMODAL, "utf8", $sEscaped)
 	  ;Exit
 
 	  ;MsgBox($MB_SYSTEMMODAL, "Pc Long format", _DateTimeFormat(_NowCalc(), 1))
-	  Local $title = "Clip " & _DateTimeFormat(_NowCalc(), 5)
+	  ;Local $title = "Clip " & _DateTimeFormat(_NowCalc(), 5)
+ 	  ;$title = StringReplace($title, ":", '-')
+	  Local $title = "Clip "
 
 
 	  $titleAbsctract = StringReplace($titleAbsctract, @CR, ' ')
 	  If StringLen($titleAbsctract) > 15 Then
 		$titleAbsctract = StringMid($titleAbsctract, 1, 15) & '...'
 	  EndIf
-	  Local $stickyTitle = '[' & _DateTimeFormat(_NowCalc(), 5) & '] ' & $titleAbsctract
+
+
+	  ;Local $stickyTitle = '[' & _DateTimeFormat(_NowCalc(), 5) & '] ' & $titleAbsctract
+	  Local $stickyTitle = $titleAbsctract
 
 	  ;MsgBox($MB_SYSTEMMODAL, "format 5", $title)
 	  $title = StringReplace($title, "'", "")
@@ -166,7 +174,7 @@ If $CmdLine[0] = 0 Then
 
 	  $sti = $sti & "{\rtf1\ansi\ansicpg950\deff0\deflang1033\deflangfe1028{\fonttbl{\f0\fswiss\fprq2\fcharset136 System;}}"
 	  $sti = $sti & @CRLF & "{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\lang1028\b\f0\fs24 "
-	  $sti = $sti & $sData
+	  $sti = $sti & $sData & "\par"
 	  $sti = $sti & @CRLF & "}"
 
 	  $title = StringReplace($title, ":", "-")
