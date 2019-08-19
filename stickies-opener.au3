@@ -48,7 +48,7 @@ Func openWithStickies($file, $sti)
 
    ; ------------------------------
    Sleep(1000)
-   ;FileDelete($stiFilename)
+   FileDelete($stiFilename)
 EndFunc
 
 Func StringTrim($str)
